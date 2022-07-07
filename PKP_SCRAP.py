@@ -5,15 +5,12 @@ import networkx as nx
 from get_gecko_driver import GetGeckoDriver
 from selenium import webdriver
 import time
-#from PIL import Image
 import io
 import requests
-#from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
-#from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 
 options = Options()
