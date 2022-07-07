@@ -1,11 +1,10 @@
 import pandas as pd
 from datetime import date, timedelta
 import selenium
-import networkx as nx
 from get_gecko_driver import GetGeckoDriver
 from selenium import webdriver
 import time
-import io
+import os
 import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -33,8 +32,8 @@ yesterday=yesterday.strftime("%d.%m.%y")
 
 Trains=pd.DataFrame()
 counter=0
-print('Start')
-cities=pd.read_csv('I:/cities2.csv')
+path=os.getcwd()
+cities=pd.read_csv(path+'/cities.csv')
 cities_list = cities['City'].to_list()
 i=1
 for origination in cities_list:
@@ -47,19 +46,25 @@ for origination in cities_list:
             while check_exists_by_xpath('//button[@class=" css-1hy2vtq"]') == True:
                 cookie_button = driver.find_element(By.XPATH, '//button[@class=" css-1hy2vtq"]')
                 cookie_button.click()
+            time.sleep(1)
+            if check_exists_by_xpath('//div[@class="qc-cmp2-buttons-desktop"]') == True:
+                cookie_button = driver.find_element(By.XPATH, '//div[@class="qc-cmp2-buttons-desktop"]')
+                cookie_button.click()
             time.sleep(2)
-            print("liczę "+origination+" "+destination)
+            print("count "+origination+" "+destination+ "route")
             orig = driver.find_element(By.XPATH, '//input[@id="from-station"]')
             time.sleep(1)
             dest= driver.find_element(By.XPATH, '//input[@id="to-station"]')
-            orig.send_keys(origination+"-")
+            orig.send_keys(origination)
             time.sleep(1)
-            dest.send_keys(destination+"-")
+            dest.send_keys(destination)
             time.sleep(2)
             depart = driver.find_element(By.XPATH, '//input[@id="hour"]')
             depart.send_keys("00:00")
             time.sleep(2)
             direct_train = driver.find_element(By.XPATH, '//div[@class="checkbox3"]')
+            ActionChains(driver).move_to_element(direct_train).perform()
+            time.sleep(1)
             direct_train.click()
             time.sleep(1)
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -91,7 +96,5 @@ for origination in cities_list:
                 Trains.loc[i,'daily_trains']=counter
             i=i+1
 
-print(Trains)
-Trains.to_csv('I:/testowy_graf.csv', index=False)
-
-
+driver.quit()
+Trains.to_csv(path+'/graf.csv', index=False)
