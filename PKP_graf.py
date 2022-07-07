@@ -7,7 +7,7 @@ from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
 import plotly.graph_objects as go
 
-geolocator = Nominatim(user_agent="msoch33")
+geolocator = Nominatim(user_agent="YOURLOGIN")
 geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
 path=os.getcwd()
 Trains=pd.read_csv(path+'/graf.csv')
