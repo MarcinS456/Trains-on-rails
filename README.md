@@ -8,9 +8,9 @@ The scope is to visualize number of direct trains running daily between given ci
 
 Script PKP\_SCRAP.py uses Selenium as a main tool for timetable browsing. It checks if direct connection between cities exists (from file cities.csv). If so, it counted the number and store the value. Finally output data (graf.csv) is saved and ready to be visualized. List of cities is editable – you provide city names you are interested in.
 
-Visualization is done by PKP\_graf.py. It creates pivot table for Seaborn heatmap, generates it and saves as a jpg file. It also geocodes names to Lat, Lon, and using Plotly plot on the map cities and a graph of direct trains connections.
+Visualization is done by PKP\_graf.py. It creates pivot table for Seaborn heatmap, generates it and saves as a heat.jpg file. It also geocodes names to Lat, Lon, and using Plotly plot on the map cities and a graph of direct trains connections - opens as a html page
 
-Running the tool you can easily visualize and understand train traffic volume - in terms of number of trains not passengers
+Running the tool you can easily visualize and understand train traffic volume - in terms of number of trains not passengers.
 
 Usage:
 
