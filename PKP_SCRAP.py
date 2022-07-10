@@ -45,6 +45,30 @@ cities_list = cities['City'].to_list()
 
 timetable_search_url = 'https://rozklad-pkp.pl/'
 
+
+def count_trains_between_two_cities():
+    is_date_today = False
+    counter = 0
+    while not is_date_today:
+        counter = 0
+        if check_exists_by_xpath('//tr'):
+            trains = driver.find_elements(By.XPATH, '//tr')
+            for train in trains:
+                txt = train.text
+                is_date_today = today in txt
+                train_started_yesterday = yesterday in txt
+                if not train_started_yesterday and is_date_today:
+                    counter = counter + 1
+            sleep_to_not_stress_server()
+            if check_exists_by_xpath('//a[@class="tp later-connections"]'):
+                next_trains = driver.find_element(By.XPATH, '//a[@class="tp later-connections"]')
+                next_trains.click()
+        else:
+            is_date_today = False
+
+    return counter
+
+
 df_idx = 1
 
 for origination in cities_list:
@@ -94,31 +118,13 @@ for origination in cities_list:
         submit.click()
         wait_for_the_page_to_load()
 
-        is_date_today = False
-        counter = 0
-        while not is_date_today:
-            counter = 0
-            if check_exists_by_xpath('//tr'):
-                trains = driver.find_elements(By.XPATH, '//tr')
-                for train in trains:
-                    txt = train.text
-                    is_date_today = today in txt
-                    is_date_yesterday = yesterday in txt
-                    if not is_date_yesterday and not is_date_today:
-                        counter = counter + 1
-                        # print(counter)
-                sleep_to_not_stress_server()
-                if check_exists_by_xpath('//a[@class="tp later-connections"]'):
-                    next_trains = driver.find_element(By.XPATH, '//a[@class="tp later-connections"]')
-                    next_trains.click()
-            else:
-                is_date_today = False
-
-        if counter > 0:
+        num_connections = count_trains_between_two_cities()
+        if num_connections > 0:
             Trains.loc[df_idx, 'Origination'] = origination
             Trains.loc[df_idx, 'Destination'] = destination
-            Trains.loc[df_idx, 'daily_trains'] = counter
+            Trains.loc[df_idx, 'daily_trains'] = num_connections
         df_idx = df_idx + 1
+
 
 driver.quit()
 Trains.to_csv(path + '/graf.csv', index=False)
