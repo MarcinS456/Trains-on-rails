@@ -27,7 +27,6 @@ def wait_for_the_page_to_load():
 def sleep_to_not_stress_server():
     time.sleep(1)
 
-
 options.headless = False
 
 driver = webdriver.Firefox(options=options)
@@ -43,7 +42,6 @@ path = os.getcwd()
 cities = pd.read_csv(path + '/cities.csv')
 cities_list = cities['City'].to_list()
 
-timetable_search_url = 'https://rozklad-pkp.pl/'
 
 
 def count_trains_between_two_cities():
@@ -69,26 +67,31 @@ def count_trains_between_two_cities():
     return counter
 
 
+def load_timetable_page():
+    timetable_search_url = 'https://rozklad-pkp.pl/'
+    driver.get(timetable_search_url)
+    wait_for_the_page_to_load()
+
+    # close popup
+    while check_exists_by_xpath('//button[@class=" css-1hy2vtq"]'):
+        cookie_button = driver.find_element(By.XPATH, '//button[@class=" css-1hy2vtq"]')
+        cookie_button.click()
+    wait_for_the_page_to_load()
+
+    # close privacy settings popup
+    if check_exists_by_xpath('//div[@class="qc-cmp2-buttons-desktop"]'):
+        cookie_button = driver.find_element(By.XPATH, '//div[@class="qc-cmp2-buttons-desktop"]')
+        cookie_button.click()
+    wait_for_the_page_to_load()
+
+
 df_idx = 1
 
 for origination in cities_list:
     other_cities = [c for c in cities_list if c != origination]
     print(origination, "->", other_cities)
     for destination in other_cities:
-        driver.get(timetable_search_url)
-        wait_for_the_page_to_load()
-
-        # close popup
-        while check_exists_by_xpath('//button[@class=" css-1hy2vtq"]'):
-            cookie_button = driver.find_element(By.XPATH, '//button[@class=" css-1hy2vtq"]')
-            cookie_button.click()
-        wait_for_the_page_to_load()
-
-        # close privacy settings popup
-        if check_exists_by_xpath('//div[@class="qc-cmp2-buttons-desktop"]'):
-            cookie_button = driver.find_element(By.XPATH, '//div[@class="qc-cmp2-buttons-desktop"]')
-            cookie_button.click()
-        wait_for_the_page_to_load()
+        load_timetable_page()
 
         print("count", origination, destination, "route")
         orig = driver.find_element(By.XPATH, '//input[@id="from-station"]')
@@ -127,4 +130,5 @@ for origination in cities_list:
 
 
 driver.quit()
-Trains.to_csv(path + '/graf.csv', index=False)
+dest_path = os.path.join(path, 'graf.csv')
+Trains.to_csv(dest_path, index=False)
