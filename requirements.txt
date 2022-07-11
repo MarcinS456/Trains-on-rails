@@ -1,8 +1,5 @@
 pandas
 selenium
-os
-time
-datetime
 requests
 get_gecko_driver
 matplotlib
